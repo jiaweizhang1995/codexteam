@@ -1,0 +1,31 @@
+{
+  "name": "codex-agent-teams",
+  "version": "0.1.0",
+  "description": "Hybrid Codex plugin, CLI, and MCP server for lead/teammate orchestration with shared tasks and mailbox state.",
+  "type": "module",
+  "bin": {
+    "codex-agent-teams": "./dist/src/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsx --test tests/*.test.ts",
+    "demo:calculator": "tsx scripts/calculator-demo.ts"
+  },
+  "keywords": [
+    "codex",
+    "plugin",
+    "mcp",
+    "agents",
+    "orchestration"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "name": "codex-agent-teams",
+  "version": "0.1.0",
+  "description": "Codex plugin and MCP wrapper for lead-managed teammate runners with shared task and mailbox state.",
+  "author": {
+    "name": "OpenAI Codex Workspace",
+    "email": "support@openai.com",
+    "url": "https://openai.com/"
+  },
+  "homepage": "https://github.com/openai/codex",
+  "repository": "https://github.com/openai/codex",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "agents",
+    "mcp",
+    "orchestration"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Codex Agent Teams",
+    "shortDescription": "Coordinate named Codex teammates through shared tasks, mailbox messages, and lead-managed cleanup",
+    "longDescription": "Use Codex Agent Teams to create a lead-managed workflow with shared tasks, teammate mailbox messaging, detached Codex runner loops, and a local MCP control plane.",
+    "developerName": "OpenAI",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/openai/codex",
+    "privacyPolicyURL": "https://openai.com/policies/privacy-policy/",
+    "termsOfServiceURL": "https://openai.com/policies/terms-of-use/",
+    "defaultPrompt": [
+      "Create a review team with security, performance, and tests teammates",
+      "Split a feature into tasks and let named teammates claim work",
+      "Run a shared-task debugging session with multiple hypotheses"
+    ],
+    "brandColor": "#1D4ED8"
+  }
+}

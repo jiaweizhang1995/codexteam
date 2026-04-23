@@ -1,0 +1,169 @@
+:root {
+  color-scheme: light;
+  --bg-start: #f4efe6;
+  --bg-end: #dfe7f2;
+  --panel: rgba(16, 24, 40, 0.94);
+  --panel-edge: rgba(255, 255, 255, 0.18);
+  --display-muted: rgba(226, 232, 240, 0.72);
+  --display-text: #f8fafc;
+  --key: #eef2f7;
+  --key-text: #132238;
+  --utility: #cbd5e1;
+  --operator: #f59e0b;
+  --equals: #fb7185;
+  --shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+  --radius: 28px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.72), transparent 35%),
+    linear-gradient(160deg, var(--bg-start), var(--bg-end));
+  color: var(--display-text);
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.calculator {
+  width: min(100%, 380px);
+  padding: 22px;
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+}
+
+.display {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 18px 22px;
+  margin-bottom: 18px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.94));
+  overflow: hidden;
+}
+
+.display__history {
+  min-height: 1.2em;
+  font-size: 0.95rem;
+  color: var(--display-muted);
+  text-align: right;
+  word-break: break-word;
+}
+
+.display__value {
+  font-size: clamp(2.6rem, 7vw, 4rem);
+  font-weight: 600;
+  line-height: 1;
+  text-align: right;
+  letter-spacing: -0.04em;
+  word-break: break-all;
+}
+
+.display__value.is-error {
+  font-size: clamp(1.9rem, 6vw, 2.6rem);
+  color: #fecaca;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.key {
+  appearance: none;
+  border: 0;
+  border-radius: 18px;
+  min-height: 68px;
+  padding: 0;
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--key-text);
+  background: linear-gradient(180deg, #ffffff, var(--key));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 10px 18px rgba(15, 23, 42, 0.16);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.key:hover,
+.key:focus-visible {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 14px 24px rgba(15, 23, 42, 0.2);
+}
+
+.key:active {
+  transform: translateY(1px);
+  filter: brightness(0.98);
+}
+
+.key:focus-visible {
+  outline: 3px solid rgba(251, 191, 36, 0.45);
+  outline-offset: 2px;
+}
+
+.key--utility {
+  background: linear-gradient(180deg, #e2e8f0, var(--utility));
+}
+
+.key--operator {
+  color: #fff7ed;
+  background: linear-gradient(180deg, #fbbf24, var(--operator));
+}
+
+.key--equals {
+  color: white;
+  background: linear-gradient(180deg, #fb7185, var(--equals));
+}
+
+.key--zero {
+  grid-column: span 2;
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .calculator {
+    width: 100%;
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .display {
+    min-height: 104px;
+    padding: 16px 16px 20px;
+  }
+
+  .keypad {
+    gap: 10px;
+  }
+
+  .key {
+    min-height: 60px;
+    border-radius: 16px;
+    font-size: 1.2rem;
+  }
+}

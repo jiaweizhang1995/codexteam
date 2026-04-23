@@ -1,0 +1,43 @@
+<evals>
+  <eval id="1">
+    <question>Create a team named review-pr with three teammates and return the resulting member list.</question>
+    <expected>Calls team_start, then team_status, and reports the three members with active runner state.</expected>
+  </eval>
+  <eval id="2">
+    <question>Create two tasks where the second depends on the first, then explain which task is claimable.</question>
+    <expected>Calls task_create twice and task_list or team_status, then explains only the dependency-free task is claimable.</expected>
+  </eval>
+  <eval id="3">
+    <question>As agent security, claim the next available task and summarize what changed in task state.</question>
+    <expected>Calls task_claim and reports the claimed task id plus status transition to in_progress.</expected>
+  </eval>
+  <eval id="4">
+    <question>Send a direct message from lead to security asking for cookie/session review, then read security's inbox.</question>
+    <expected>Calls message_send and message_read with security as recipient and returns the delivered message.</expected>
+  </eval>
+  <eval id="5">
+    <question>Broadcast a note to all teammates that they should avoid same-file conflicts, then list the most recent mailbox entries.</question>
+    <expected>Calls message_broadcast and message_read and returns the broadcast entry visible to teammates.</expected>
+  </eval>
+  <eval id="6">
+    <question>Mark a claimed task completed with a short summary, then verify dependent tasks are now unblocked.</question>
+    <expected>Calls task_update with completed status, then task_list and reports the dependent task is now claimable.</expected>
+  </eval>
+  <eval id="7">
+    <question>Attempt to clean up a team while a teammate is still active and explain the failure.</question>
+    <expected>Calls team_cleanup and returns an actionable refusal that active teammates must be stopped first.</expected>
+  </eval>
+  <eval id="8">
+    <question>Request shutdown for one teammate, confirm their state changed, and explain the next cleanup step.</question>
+    <expected>Calls agent_stop and team_status and reports stop_requested or stopped before cleanup.</expected>
+  </eval>
+  <eval id="9">
+    <question>List only pending tasks for a team with mixed task states.</question>
+    <expected>Calls task_list with a pending filter and returns only pending tasks.</expected>
+  </eval>
+  <eval id="10">
+    <question>Read the latest lead inbox messages after two teammates report results, then summarize both findings.</question>
+    <expected>Calls message_read for lead, gathers multiple entries, and synthesizes both summaries instead of returning raw logs.</expected>
+  </eval>
+</evals>
+
