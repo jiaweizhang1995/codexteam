@@ -2,6 +2,8 @@
 
 `codexteam` is a user-scoped Codex installer, CLI, and MCP runtime that approximates Claude Code Agent Teams with the Codex surfaces available today.
 
+Simple bilingual guide: [QUICKSTART.md](/Users/jimmymacmini/Desktop/codex-project/codex-agent-teams/QUICKSTART.md)
+
 It uses:
 
 - one lead Codex session
