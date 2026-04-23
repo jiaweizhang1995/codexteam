@@ -40,6 +40,18 @@ Check the installation:
 npx codexteam doctor
 ```
 
+Typical healthy output looks like:
+
+```json
+{
+  "runtimeInstalled": true,
+  "skillInstalled": true,
+  "configInstalled": true
+}
+```
+
+If `doctor` reports `configInstalled: false`, run `npx codexteam install` again and restart Codex.
+
 Remove it:
 
 ```bash
@@ -50,6 +62,24 @@ npx codexteam uninstall
 
 ```bash
 npx codexteam init
+```
+
+## Quick Start
+
+Once installed and after one Codex restart, open any project and either talk to Codex directly or use the CLI:
+
+```bash
+codexteam start review-pr --member planner --member builder --member qa --no-runners
+codexteam task-add review-pr "Plan work" --description "Write the plan in README.md" --assignee planner
+codexteam status review-pr --json
+```
+
+In the Codex chat itself, a good starting prompt is:
+
+```text
+Create an agent team named review-pr with planner, builder, and qa.
+Add one task per teammate, use the shared task list, and have everyone
+report back to lead through the mailbox.
 ```
 
 ## Development Install
@@ -193,3 +223,19 @@ This demo is the clearest way to test that the lead owns the roadmap while teamm
 - Cleanup refuses while any teammate is still active
 - If a teammate crashes mid-task, its claimed task is marked `failed` by the runner supervisor
 - In this environment, detached `codex exec` workers can still be interrupted after making file edits but before sending mailbox/task updates; the shared task model survives that case, but lead-driven explicit teammate runs are still more reliable for longer tasks
+
+## Publishing Notes
+
+Before publishing a new version:
+
+```bash
+npm run build
+npm test
+npm pack --dry-run
+```
+
+Then publish:
+
+```bash
+npm publish --access public
+```
