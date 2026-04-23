@@ -27,7 +27,7 @@ It uses:
 Install once for your user account:
 
 ```bash
-npx codexteam install
+npx @jimmyzhang95/codexteam install
 ```
 
 Then restart Codex.
@@ -37,7 +37,7 @@ After that, `codexteam` is available in any project you open in Codex. The runti
 Check the installation:
 
 ```bash
-npx codexteam doctor
+npx @jimmyzhang95/codexteam doctor
 ```
 
 Typical healthy output looks like:
@@ -55,14 +55,16 @@ If `doctor` reports `configInstalled: false`, run `npx codexteam install` again 
 Remove it:
 
 ```bash
-npx codexteam uninstall
+npx @jimmyzhang95/codexteam uninstall
 ```
 
 `init` is kept as an alias for `install`:
 
 ```bash
-npx codexteam init
+npx @jimmyzhang95/codexteam init
 ```
+
+The unscoped package name `codexteam` is blocked by npm similarity policy, so the published package is currently scoped. Once installed, the command available on disk is still `codexteam`.
 
 ## Quick Start
 

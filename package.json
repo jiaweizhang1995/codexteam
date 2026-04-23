@@ -1,17 +1,17 @@
 {
-  "name": "codexteam",
+  "name": "@jimmyzhang95/codexteam",
   "version": "0.1.0",
   "description": "User-scoped Codex agent-team installer, CLI, and MCP runtime for lead-managed teammate orchestration.",
   "type": "module",
-  "bin": {
-    "codexteam": "./dist/src/cli.js",
-    "codex-agent-teams": "./dist/src/cli.js"
-  },
+  "bin": "dist/src/cli.js",
   "files": [
     "dist/**/*",
     "README.md",
     "package.json"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "tsx --test tests/*.test.ts",
