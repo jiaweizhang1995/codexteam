@@ -1,20 +1,20 @@
 # Codex Agent Teams
 
-`codex-agent-teams` is a hybrid Codex plugin, CLI, and MCP server that approximates Claude Code Agent Teams with local building blocks Codex exposes today.
+`codexteam` is a user-scoped Codex installer, CLI, and MCP runtime that approximates Claude Code Agent Teams with the Codex surfaces available today.
 
 It uses:
 
 - one lead Codex session
 - a shared task list and mailbox on disk
 - detached teammate runner loops backed by `codex exec`
-- a project-level MCP server so any Codex session in this repo can coordinate through the same state
+- a user-scoped MCP server registration so Codex can reach the runtime from any project
 
 ## What it does
 
 - Creates named teams with lead-owned shared state under `.codex-agent-teams/<team>/`
 - Spawns teammate runner loops that repeatedly invoke Codex against the same project
 - Exposes MCP tools for task creation, claiming, updates, direct messages, broadcasts, status, shutdown, and cleanup
-- Supports a repo-local Codex plugin wrapper for discoverability and installability
+- Installs a global Codex skill so the capability is available in any project after one setup step
 
 ## What it does not do
 
@@ -22,29 +22,57 @@ It uses:
 - `exec` teammates are independent Codex turns, not long-lived in-process sessions
 - Direct teammate-to-teammate chat works through the shared mailbox, not native host runtime messaging
 
-## Install
+## User Install
+
+Install once for your user account:
+
+```bash
+npx codexteam install
+```
+
+Then restart Codex.
+
+After that, `codexteam` is available in any project you open in Codex. The runtime is installed under `~/.codexteam/`, the global skill is installed under `~/.codex/skills/codexteam/`, and the MCP server registration is written into `~/.codex/config.toml`.
+
+Check the installation:
+
+```bash
+npx codexteam doctor
+```
+
+Remove it:
+
+```bash
+npx codexteam uninstall
+```
+
+`init` is kept as an alias for `install`:
+
+```bash
+npx codexteam init
+```
+
+## Development Install
+
+If you are developing this repo locally, build it first:
 
 ```bash
 npm install
 npm run build
 ```
 
-To use the project-level MCP server, open Codex from this repo after building so it can load [`.mcp.json`](/Users/jimmymacmini/Desktop/codex-project/codex-agent-teams/.mcp.json).
-
-To use the repo-local plugin, point a marketplace entry at [`plugins/codex-agent-teams`](/Users/jimmymacmini/Desktop/codex-project/codex-agent-teams/plugins/codex-agent-teams).
-
 ## CLI
 
 Start a team with three runners:
 
 ```bash
-node dist/src/cli.js start review-pr --member security --member performance --member tests
+codexteam start review-pr --member security --member performance --member tests
 ```
 
 Tune runner behavior or swap the Codex launcher when needed:
 
 ```bash
-node dist/src/cli.js start review-pr \
+codexteam start review-pr \
   --member security \
   --runner-interval-ms 2000 \
   --codex-command codex \
@@ -55,41 +83,41 @@ node dist/src/cli.js start review-pr \
 Create tasks:
 
 ```bash
-node dist/src/cli.js task-add review-pr "Security review" --description "Audit auth/session handling" --assignee security
-node dist/src/cli.js task-add review-pr "Perf review" --description "Review hot paths and obvious regressions" --assignee performance
+codexteam task-add review-pr "Security review" --description "Audit auth/session handling" --assignee security
+codexteam task-add review-pr "Perf review" --description "Review hot paths and obvious regressions" --assignee performance
 ```
 
 Inspect status:
 
 ```bash
-node dist/src/cli.js status review-pr --json
+codexteam status review-pr --json
 ```
 
 Start without detached runners for local smoke tests:
 
 ```bash
-node dist/src/cli.js start review-pr --member security --no-runners
+codexteam start review-pr --member security --no-runners
 ```
 
 Send a direct message:
 
 ```bash
-node dist/src/cli.js message review-pr --from lead --to security "Focus on cookies, tokens, and authorization gaps."
+codexteam message review-pr --from lead --to security "Focus on cookies, tokens, and authorization gaps."
 ```
 
 Manually claim or update tasks during testing:
 
 ```bash
-node dist/src/cli.js claim review-pr --agent security
-node dist/src/cli.js task-update review-pr <task-id> --status completed --summary "Review finished"
-node dist/src/cli.js messages review-pr --agent lead --json
+codexteam claim review-pr --agent security
+codexteam task-update review-pr <task-id> --status completed --summary "Review finished"
+codexteam messages review-pr --agent lead --json
 ```
 
 Request shutdown and cleanup:
 
 ```bash
-node dist/src/cli.js stop review-pr --agent security
-node dist/src/cli.js cleanup review-pr
+codexteam stop review-pr --agent security
+codexteam cleanup review-pr
 ```
 
 ## MCP tools
@@ -121,7 +149,7 @@ Each team lives under `.codex-agent-teams/<team>/`:
 
 ## Recommended Codex workflow
 
-After building and restarting Codex from this repo, ask the lead session to create a team:
+After `npx codexteam install` and one Codex restart, ask the lead session to create a team:
 
 ```text
 Create an agent team named review-pr with three teammates: security,
@@ -160,7 +188,7 @@ This demo is the clearest way to test that the lead owns the roadmap while teamm
 
 ## Known limitations
 
-- Existing Codex sessions will not pick up a newly added `.mcp.json` until restarted
+- Existing Codex sessions will not pick up a newly installed user-scoped MCP server until restarted
 - Runner loops assume `codex` is on `PATH`
 - Cleanup refuses while any teammate is still active
 - If a teammate crashes mid-task, its claimed task is marked `failed` by the runner supervisor

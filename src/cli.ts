@@ -2,6 +2,7 @@
 import process from "node:process";
 
 import { startMcpServer } from "./mcp.js";
+import { doctorUserScope, installUserScope, uninstallUserScope } from "./install.js";
 import { AgentTeamsRuntime } from "./runtime.js";
 import { TeamStoreError } from "./store.js";
 import { runAgentLoop } from "./worker.js";
@@ -74,20 +75,24 @@ function printOutput(value: unknown, asJson: boolean): void {
 function usage(): string {
   return [
     "Usage:",
-    "  codex-agent-teams start <team> --member <name> [--member <name>] [--mode exec] [--runner-interval-ms <ms>] [--codex-command <path>] [--codex-arg <value>] [--no-runners]",
-    "  codex-agent-teams status <team> [--json]",
-    "  codex-agent-teams task-add <team> <title> --description <text> [--assignee <name>] [--depends-on <task-id>]",
-    "  codex-agent-teams claim <team> --agent <name> [--json]",
-    "  codex-agent-teams task-update <team> <task-id> [--status <status>] [--summary <text>] [--failure <text>] [--json]",
-    "  codex-agent-teams task-list <team> [--status <status>] [--json]",
-    "  codex-agent-teams messages <team> --agent <name> [--limit <n>] [--json]",
-    "  codex-agent-teams message <team> --from <name> --to <name> <body>",
-    "  codex-agent-teams broadcast <team> --from <name> <body>",
-    "  codex-agent-teams spawn <team> --member <name> [--role <text>] [--no-runner]",
-    "  codex-agent-teams stop <team> --agent <name>",
-    "  codex-agent-teams cleanup <team>",
-    "  codex-agent-teams mcp",
-    "  codex-agent-teams agent-loop <team> <agent>"
+    "  codexteam install",
+    "  codexteam init",
+    "  codexteam uninstall",
+    "  codexteam doctor [--json]",
+    "  codexteam start <team> --member <name> [--member <name>] [--mode exec] [--runner-interval-ms <ms>] [--codex-command <path>] [--codex-arg <value>] [--no-runners]",
+    "  codexteam status <team> [--json]",
+    "  codexteam task-add <team> <title> --description <text> [--assignee <name>] [--depends-on <task-id>]",
+    "  codexteam claim <team> --agent <name> [--json]",
+    "  codexteam task-update <team> <task-id> [--status <status>] [--summary <text>] [--failure <text>] [--json]",
+    "  codexteam task-list <team> [--status <status>] [--json]",
+    "  codexteam messages <team> --agent <name> [--limit <n>] [--json]",
+    "  codexteam message <team> --from <name> --to <name> <body>",
+    "  codexteam broadcast <team> --from <name> <body>",
+    "  codexteam spawn <team> --member <name> [--role <text>] [--no-runner]",
+    "  codexteam stop <team> --agent <name>",
+    "  codexteam cleanup <team>",
+    "  codexteam mcp",
+    "  codexteam agent-loop <team> <agent>"
   ].join("\n");
 }
 
@@ -98,6 +103,33 @@ async function main(): Promise<void> {
   const asJson = hasFlag(parsed, "json");
 
   switch (command) {
+    case "install":
+    case "init": {
+      const result = await installUserScope();
+      printOutput(
+        {
+          ...result,
+          next_step: "Restart Codex so the user-scoped codexteam MCP server and skill are loaded."
+        },
+        true
+      );
+      return;
+    }
+    case "uninstall": {
+      const result = await uninstallUserScope();
+      printOutput(
+        {
+          ...result,
+          next_step: "Restart Codex to unload the user-scoped codexteam MCP server and skill."
+        },
+        true
+      );
+      return;
+    }
+    case "doctor": {
+      printOutput(await doctorUserScope(), true);
+      return;
+    }
     case "start": {
       const [teamName] = rest;
       if (!teamName) {

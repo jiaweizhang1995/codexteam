@@ -1,16 +1,23 @@
 {
-  "name": "codex-agent-teams",
+  "name": "codexteam",
   "version": "0.1.0",
-  "description": "Hybrid Codex plugin, CLI, and MCP server for lead/teammate orchestration with shared tasks and mailbox state.",
+  "description": "User-scoped Codex agent-team installer, CLI, and MCP runtime for lead-managed teammate orchestration.",
   "type": "module",
   "bin": {
+    "codexteam": "./dist/src/cli.js",
     "codex-agent-teams": "./dist/src/cli.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "tsx --test tests/*.test.ts",
     "demo:calculator": "tsx scripts/calculator-demo.ts",
-    "demo:todo-cycle": "tsx scripts/todo-cycle-demo.ts"
+    "demo:todo-cycle": "tsx scripts/todo-cycle-demo.ts",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "codex",
