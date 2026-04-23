@@ -1,5 +1,4 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import { writeFile, rm } from "node:fs/promises";
 
@@ -7,7 +6,12 @@ import { AgentTeamsRuntime } from "./runtime.js";
 import { createTemporaryDirectory } from "./store.js";
 import type { MailMessage, TaskRecord } from "./types.js";
 
-const execFileAsync = promisify(execFile);
+interface CommandResult {
+  exitCode: number;
+  signal: NodeJS.Signals | null;
+  stdout: string;
+  stderr: string;
+}
 
 function buildWorkerPrompt(
   teamName: string,
@@ -44,6 +48,45 @@ function buildWorkerPrompt(
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+async function runCodexExec(command: string, args: string[], cwd: string): Promise<CommandResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout?.setEncoding("utf8");
+    child.stdout?.on("data", (chunk) => {
+      stdout += chunk;
+    });
+
+    child.stderr?.setEncoding("utf8");
+    child.stderr?.on("data", (chunk) => {
+      stderr += chunk;
+    });
+
+    child.on("error", reject);
+    child.on("close", (exitCode, signal) => {
+      resolve({
+        exitCode: exitCode ?? (signal ? 1 : 0),
+        signal,
+        stdout,
+        stderr
+      });
+    });
+  });
+}
+
+function formatRunnerFailure(result: CommandResult): string {
+  const stderr = result.stderr.trim();
+  const stdout = result.stdout.trim();
+  const details = stderr || stdout || "unknown codex exec failure";
+  const prefix = result.signal ? `Runner terminated by signal ${result.signal}` : `Runner exited with code ${result.exitCode}`;
+  return `${prefix}: ${details}`;
 }
 
 export async function runAgentLoop(teamName: string, agentName: string, cwd = process.cwd()): Promise<void> {
@@ -105,7 +148,7 @@ export async function runAgentLoop(teamName: string, agentName: string, cwd = pr
 
     try {
       await writeFile(outputFile, "", "utf8");
-      await execFileAsync(
+      const result = await runCodexExec(
         snapshot.team.settings.codexCommand,
         [
           "exec",
@@ -118,11 +161,36 @@ export async function runAgentLoop(teamName: string, agentName: string, cwd = pr
           ...snapshot.team.settings.codexArgs,
           prompt
         ],
-        {
-          cwd: snapshot.team.cwd,
-          maxBuffer: 1024 * 1024 * 4
-        }
+        snapshot.team.cwd
       );
+
+      if (result.exitCode !== 0) {
+        throw new Error(formatRunnerFailure(result));
+      }
+
+      const latestTask = (await runtime.listTasks(teamName)).find((task) => task.id === claimedTask.id);
+      if (!latestTask || latestTask.status === "in_progress") {
+        const failureReason = `Runner exited without updating claimed task ${claimedTask.id}`;
+        await runtime.store.failClaimedTasks(teamName, agentName, failureReason);
+        await runtime.store.updateMemberRuntime(teamName, agentName, (current) => ({
+          ...current,
+          status: "failed",
+          runtime: {
+            ...current.runtime,
+            lastHeartbeatAt: new Date().toISOString(),
+            lastExitCode: 2
+          }
+        }));
+        await runtime.sendMessage({
+          teamName,
+          from: agentName,
+          to: "lead",
+          body: `Runner protocol failure for ${agentName}: ${failureReason}`,
+          scope: "status"
+        });
+        await new Promise((resolve) => setTimeout(resolve, snapshot.team.settings.runnerIntervalMs));
+        continue;
+      }
 
       await runtime.store.updateMemberRuntime(teamName, agentName, (current) => ({
         ...current,
@@ -134,12 +202,7 @@ export async function runAgentLoop(teamName: string, agentName: string, cwd = pr
         }
       }));
     } catch (error) {
-      const message =
-        error instanceof Error && "stderr" in error && typeof error.stderr === "string"
-          ? error.stderr
-          : error instanceof Error
-            ? error.message
-            : "unknown codex exec failure";
+      const message = error instanceof Error ? error.message : "unknown codex exec failure";
       await runtime.store.failClaimedTasks(teamName, agentName, `Runner failure: ${message.trim()}`);
       await runtime.store.updateMemberRuntime(teamName, agentName, (current) => ({
         ...current,

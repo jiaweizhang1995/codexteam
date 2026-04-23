@@ -10,6 +10,9 @@ export interface CreateTeamInput {
   cwd?: string;
   members: Array<{ name: string; rolePrompt?: string }>;
   autoStartRunners?: boolean;
+  runnerIntervalMs?: number;
+  codexCommand?: string;
+  codexArgs?: string[];
 }
 
 export interface RuntimeOptions {
@@ -31,7 +34,10 @@ export class AgentTeamsRuntime {
       teamName: input.teamName,
       cwd: input.cwd ?? this.cwd,
       mode: input.mode ?? "exec",
-      members: input.members
+      members: input.members,
+      runnerIntervalMs: input.runnerIntervalMs,
+      codexCommand: input.codexCommand,
+      codexArgs: input.codexArgs
     });
 
     if (input.autoStartRunners !== false) {

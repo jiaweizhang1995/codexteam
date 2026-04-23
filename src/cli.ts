@@ -74,7 +74,7 @@ function printOutput(value: unknown, asJson: boolean): void {
 function usage(): string {
   return [
     "Usage:",
-    "  codex-agent-teams start <team> --member <name> [--member <name>] [--mode exec] [--no-runners]",
+    "  codex-agent-teams start <team> --member <name> [--member <name>] [--mode exec] [--runner-interval-ms <ms>] [--codex-command <path>] [--codex-arg <value>] [--no-runners]",
     "  codex-agent-teams status <team> [--json]",
     "  codex-agent-teams task-add <team> <title> --description <text> [--assignee <name>] [--depends-on <task-id>]",
     "  codex-agent-teams claim <team> --agent <name> [--json]",
@@ -104,14 +104,23 @@ async function main(): Promise<void> {
         throw new Error("Missing team name");
       }
       const members = getFlagList(parsed, "member").map((name) => ({ name }));
+      const runnerIntervalFlag = getFlag(parsed, "runner-interval-ms");
+      const runnerIntervalMs =
+        runnerIntervalFlag !== undefined ? Number.parseInt(runnerIntervalFlag, 10) : undefined;
       if (members.length === 0) {
         throw new Error("At least one --member is required");
+      }
+      if (runnerIntervalFlag !== undefined && Number.isNaN(runnerIntervalMs)) {
+        throw new Error("--runner-interval-ms must be an integer");
       }
       const result = await runtime.startTeam({
         teamName,
         mode: (getFlag(parsed, "mode") as "exec" | "tmux" | undefined) ?? "exec",
         members,
-        autoStartRunners: !hasFlag(parsed, "no-runners")
+        autoStartRunners: !hasFlag(parsed, "no-runners"),
+        runnerIntervalMs,
+        codexCommand: getFlag(parsed, "codex-command"),
+        codexArgs: getFlagList(parsed, "codex-arg")
       });
       printOutput(result, asJson);
       return;
