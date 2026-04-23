@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static Todo App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="todo-app" aria-labelledby="app-title">
+        <header class="app-header">
+          <p class="eyebrow">Todo Cycle Demo</p>
+          <h1 id="app-title">Keep the next thing obvious.</h1>
+          <p class="app-copy">
+            A small static todo list with fast add, toggle, and remove actions.
+          </p>
+        </header>
+
+        <form class="todo-form" id="todo-form" novalidate>
+          <label class="sr-only" for="todo-input">New todo</label>
+          <input
+            id="todo-input"
+            name="todo"
+            type="text"
+            maxlength="120"
+            placeholder="Add a task you can finish today"
+            autocomplete="off"
+          />
+          <button type="submit">Add item</button>
+        </form>
+
+        <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+
+        <section class="list-panel" aria-labelledby="list-title">
+          <div class="list-heading">
+            <h2 id="list-title">Todos</h2>
+          </div>
+
+          <p class="empty-state" id="empty-state">
+            Nothing here yet. Add your first task to get started.
+          </p>
+
+          <ul class="todo-list" id="todo-list" aria-live="polite"></ul>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

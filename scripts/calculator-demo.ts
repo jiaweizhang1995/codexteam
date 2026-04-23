@@ -28,6 +28,7 @@ async function main(): Promise<void> {
       { name: "builder", rolePrompt: "Implement the calculator app in examples/calculator-app/." },
       { name: "qa", rolePrompt: "Verify behavior, document manual tests, and report regressions." }
     ],
+    codexArgs: ["-c", 'model_reasoning_effort="low"'],
     autoStartRunners: !noRunners
   });
 
@@ -75,4 +76,3 @@ main().catch((error) => {
   process.stderr.write(`${error instanceof Error ? error.message : "calculator demo failed"}\n`);
   process.exitCode = 1;
 });
-
