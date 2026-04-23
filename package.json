@@ -1,9 +1,11 @@
 {
   "name": "@jimmyzhang95/codexteam",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "User-scoped Codex agent-team installer, CLI, and MCP runtime for lead-managed teammate orchestration.",
   "type": "module",
-  "bin": "dist/src/cli.js",
+  "bin": {
+    "codexteam": "dist/src/cli.js"
+  },
   "files": [
     "dist/**/*",
     "README.md",

@@ -50,7 +50,7 @@ Typical healthy output looks like:
 }
 ```
 
-If `doctor` reports `configInstalled: false`, run `npx codexteam install` again and restart Codex.
+If `doctor` reports `configInstalled: false`, run `npx @jimmyzhang95/codexteam install` again and restart Codex.
 
 Remove it:
 
@@ -181,7 +181,7 @@ Each team lives under `.codex-agent-teams/<team>/`:
 
 ## Recommended Codex workflow
 
-After `npx codexteam install` and one Codex restart, ask the lead session to create a team:
+After `npx @jimmyzhang95/codexteam install` and one Codex restart, ask the lead session to create a team:
 
 ```text
 Create an agent team named review-pr with three teammates: security,
